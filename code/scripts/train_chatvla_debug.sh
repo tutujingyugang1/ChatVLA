@@ -1,0 +1,66 @@
+#!/bin/bash
+TASK=local_debug_data_zzy
+LLM=qwen2_vl
+LLM_MODEL_SIZE=2B
+ACTION_HEAD="scale_dp_policy" # unet_diffusion_policy or scale_dp_policy
+MNOP=/home/jz08/zhouzy/model_Param/Qwen2-VL-2B-Instruct # official qwen2_vl weights
+OUTPUT=/media/jz08/HDD/zhouzy/model_param/local_debug/chatvla_lora
+
+mkdir -p $OUTPUT/src
+cp -r ./scripts $OUTPUT/
+cp -r ./data_utils $OUTPUT/src/
+cp -r ./qwen2_vla $OUTPUT/src/
+cp -r ./policy_heads $OUTPUT/src/
+
+deepspeed --master_port 29607 --num_gpus=2 --num_nodes=1 ./train_vla.py \
+  --deepspeed scripts/zero2.json \
+  --use_reasoning True \
+  --action_dim 14 \
+  --state_dim 14 \
+  --chunk_size 16 \
+  --policy_head_type $ACTION_HEAD \
+  --policy_head_size "ScaleDP_L" \
+  --resume_from_checkpoint False \
+  --with_llm_head True \
+  --pretrain_image_size 320 \
+  --task_name ${TASK} \
+  --model_name_or_path ${MNOP} \
+  --freeze_vision_tower True \
+  --freeze_backbone False \
+  --bf16 True \
+  --per_device_train_batch_size 1 \
+  --gradient_accumulation_steps 1 \
+  --save_strategy "steps" \
+  --save_steps 5 \
+  --max_steps 10 \
+  --save_total_limit 100 \
+  --learning_rate 2e-5 \
+  --weight_decay 0. \
+  --warmup_ratio 0.0 \
+  --lr_scheduler_type "cosine_with_min_lr"\
+  --min_lr 0\
+  --logging_steps 1 \
+  --gradient_checkpointing True \
+  --dataloader_num_workers 0 \
+  --output_dir $OUTPUT \
+  --report_to tensorboard \
+  --logging_dir $OUTPUT/log \
+  --lora_enable True \
+  --lora_module "vit llm" \
+  --non_lora_lr 1e-4 \
+  --vl_ratio 0.33 \
+  --using_moe True \
+  --init_moe True \
+  --with_flash_attention False \
+  --freeze_vl_expert True | tee $OUTPUT/log.log
+
+
+for dir in "$OUTPUT"/*/ ; do
+    # 检查文件夹名称是否包含'checkpoint'
+    if [[ "$(basename "$dir")" == *"checkpoint"* ]]; then
+        cp ${mnop}/preprocessor_config.json $dir
+        cp ${mnop}/chat_template.json $dir
+    fi
+done
+mv ./60030.log $OUTPUT
+echo $OUTPUT

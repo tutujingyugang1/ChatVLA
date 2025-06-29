@@ -1,0 +1,65 @@
+{
+    "model": {
+        "ChatVLA-2B": {
+            "class": "Qwen2VLA",
+            "model_path": "/media/jz08/HDD/zhouzy/model_param/chatvla_qwen2/checkpoint-10000/",
+            "max_pixels": 1003520,
+            "min_pixels": 200704,
+            "max_new_tokens":64,
+            "save_model": false,
+            "eval_in_vqa": true
+        }
+    },
+    "data": {
+        "MMMU_DEV_VAL": {
+            "class": "MMMUDataset",
+            "dataset": "MMMU_DEV_VAL"
+        },
+        "MMStar": {
+            "class": "ImageMCQDataset",
+            "dataset": "MMStar"
+        },
+        "TextVQA_VAL": {
+            "class": "ImageVQADataset",
+            "dataset": "TextVQA_VAL"
+        },
+        "DocVQA_VAL": {
+            "class": "ImageVQADataset",
+            "dataset": "DocVQA_VAL"
+        },
+        "MME": {
+            "class": "ImageYORNDataset",
+            "dataset": "MME"
+        },
+        "InfoVQA_VAL": {
+            "class": "ImageVQADataset",
+            "dataset": "InfoVQA_VAL"
+        },
+        "AI2D_TEST": {
+            "class": "ImageMCQDataset",
+            "dataset": "AI2D_TEST"
+        },
+        "ChartQA_TEST": {
+            "class": "ImageVQADataset",
+            "dataset": "ChartQA_TEST"
+        },
+
+        "OCRBench": {
+            "class": "OCRBench",
+            "dataset": "OCRBench"
+        },
+        "MTVQA_TEST": {
+            "class": "MTVQADataset",
+            "dataset": "MTVQA_TEST"
+        },
+        "RealWorldQA": {
+            "class": "ImageMCQDataset",
+            "dataset": "RealWorldQA"
+        },
+
+        "HallusionBench": {
+            "class": "ImageYORNDataset",
+            "dataset": "HallusionBench"
+        }
+    }
+}
